@@ -16,30 +16,47 @@ msg_exit: .string "\Program ended\n"
 newline: .string "\n"
 
 # Database
+# ins reg, 12bit-imm(reg) ===============================================
 op_lw: .string "lw"
 op_sw: .string "sw"
 op_lb: .string "lb"
 op_sb: .string "sb"
+# END ins reg, 12bit-imm(reg) ===========================================
+
+# ins reg, 20bit-imm ====================================================
 op_lui: .string "lui"
 op_auipc: .string "auipc"
+# END ins reg, 20bit-imm ================================================
+
+# ins reg, reg, 12bit-imm ===============================================
 op_addi: .string "addi"
+op_andi: .string "andi"
+op_jalr: .string "jalr"
+op_ori: .string "ori"
+op_slti: .string "slti"
+op_sltiu: .string "sltiu"
+op_xori: .string "xori"
+# END ins reg, reg, 12bit-imm ===========================================
+
+# ins reg, reg, 5bit-imm ================================================
 op_slli: .string "slli"
 op_srli: .string "srli"
 op_srai: .string "srai"
-op_andi: .string "andi"
-op_ori: .string "ori"
-op_xori: .string "xori"
-op_slti: .string "slti"
-op_jalr: .string "jalr"
+# END ins reg, reg, 5bit-imm ============================================
+
+# R-Types
 op_add: .string "add"
 op_sub: .string "sub"
 op_sll: .string "sll"
 op_or: .string "or"
 op_and: .string "and"
+
+# B-Types
 op_beq: .string "beq"
 op_bne: .string "bne"
 op_blt: .string "blt"
 op_bge: .string "bge"
+
 op_jal: .string "jal"
 
 # Opcode Map: 

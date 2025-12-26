@@ -38,5 +38,10 @@
 
 .text
 	li t0, KEY_CODE
+	li t1, KEY_READY
+	li t2, DISPLAY_CODE
+	li t3, DISPLAY_READY
+	
 	lw t1, -010(t0)
 	lui t2, -010
+	slli t6, t3, 40
