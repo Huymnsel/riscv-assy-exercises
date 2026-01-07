@@ -24,19 +24,30 @@ op_lbu: .string "lbu"
 op_lhu: .string "lhu"
 op_sw: .string "sw"
 op_sb: .string "sb"
-op_sh: .string "sh"
+# END ins reg, 12bit-imm(reg) =======
+
+# ins reg, 20bit-imm ====================================================
 op_lui: .string "lui"
 op_auipc: .string "auipc"
+# END ins reg, 20bit-imm ============
+
+# ins reg, reg, 12bit-imm ===============================================
 op_addi: .string "addi"
+op_andi: .string "andi"
+op_jalr: .string "jalr"
+op_ori: .string "ori"
+op_slti: .string "slti"
+op_sltiu: .string "sltiu"
+op_xori: .string "xori"
+# END ins reg, reg, 12bit-imm =======
+
+# ins reg, reg, 5bit-imm ================================================
 op_slli: .string "slli"
 op_srli: .string "srli"
 op_srai: .string "srai"
-op_andi: .string "andi"
-op_ori: .string "ori"
-op_xori: .string "xori"
-op_slti: .string "slti"
-op_sltiu: .string "sltiu"
-op_jalr: .string "jalr"
+# END ins reg, reg, 5bit-imm =========
+
+# R-Types
 op_add: .string "add"
 op_sub: .string "sub"
 op_sll: .string "sll"
@@ -133,13 +144,13 @@ input_loop:
     beqz t1, input_loop
     li t0, KEYBOARD_DATA
     lw t2, 0(t0)
-    
+
     # Check for backspace (8) or delete (127)
     li t3, 8
     beq t2, t3, handle_backspace
     li t3, 127
     beq t2, t3, handle_backspace
-    
+
     # Check for enter
     li t3, 10
     beq t2, t3, start_parse
@@ -152,7 +163,7 @@ wait_display:
     beqz t3, wait_display
     li t0, DISPLAY_DATA
     sw t2, 0(t0)
-    
+
     # Store in buffer
     sb t2, 0(s0)
     addi s0, s0, 1
@@ -162,7 +173,7 @@ handle_backspace:
     # Don't backspace past start
     beq s0, s9, input_loop
     addi s0, s0, -1
-    
+
     # Display backspace sequence: BS, space, BS
     la t4, backspace_seq
 backspace_display_loop:
@@ -377,11 +388,11 @@ ps_done:
 check_is_register:
     mv t0, a0
     lb t1, 0(t0)
-    
+
     # Check for x-register format (x0-x31)
     li t2, 'x'
     beq t1, t2, check_x_register
-    
+
     # Check ABI names
     la t1, regs
 ir_scan:
@@ -413,39 +424,39 @@ ir_fail:
 check_x_register:
     addi t0, t0, 1
     lb t1, 0(t0)
-    
+
     # Must have at least one digit
     li t2, '0'
     blt t1, t2, ir_fail
     li t2, '9'
     bgt t1, t2, ir_fail
-    
+
     # Get first digit
     li t2, '0'
     sub t3, t1, t2
-    
+
     addi t0, t0, 1
     lb t1, 0(t0)
     beqz t1, check_x_range_single
-    
+
     # Check second digit
     li t2, '0'
     blt t1, t2, ir_fail
     li t2, '9'
     bgt t1, t2, ir_fail
-    
+
     # Calculate two-digit number
     li t4, 10
     mul t3, t3, t4
     li t2, '0'
     sub t4, t1, t2
     add t3, t3, t4
-    
+
     # Must be end of string
     addi t0, t0, 1
     lb t1, 0(t0)
     bnez t1, ir_fail
-    
+
     # Check range 0-31
     bltz t3, ir_fail
     li t4, 31
@@ -465,7 +476,7 @@ parse_immediate:
     mv t0, a0
     lb t1, 0(t0)
     beqz t1, parse_fail
-    
+
     # Check for negative sign
     li t6, 0
     li t2, '-'
@@ -478,14 +489,14 @@ check_hex:
     # Check if starts with '0'
     li t2, '0'
     bne t1, t2, parse_decimal
-    
+
     addi t0, t0, 1
     lb t1, 0(t0)
     li t2, 'x'
     beq t1, t2, parse_hex
     li t2, 'X'
     beq t1, t2, parse_hex
-    
+
     # Just '0', go back and parse as decimal
     addi t0, t0, -1
     j parse_decimal
@@ -496,25 +507,25 @@ parse_hex:
 hex_loop:
     lb t1, 0(t0)
     beqz t1, parse_done
-    
+
     # Check '0'-'9'
     li t2, '0'
     blt t1, t2, parse_fail
     li t2, '9'
     ble t1, t2, hex_digit
-    
+
     # Check 'A'-'F'
     li t2, 'A'
     blt t1, t2, parse_fail
     li t2, 'F'
     ble t1, t2, hex_upper
-    
+
     # Check 'a'-'f'
     li t2, 'a'
     blt t1, t2, parse_fail
     li t2, 'f'
     bgt t1, t2, parse_fail
-    
+
     li t2, 'a'
     sub t1, t1, t2
     addi t1, t1, 10
@@ -545,7 +556,7 @@ dec_loop:
     blt t1, t2, parse_fail
     li t2, '9'
     bgt t1, t2, parse_fail
-    
+
     li t4, 10
     mul t3, t3, t4
     li t2, '0'
@@ -576,12 +587,12 @@ check_is_5bit_imm:
     sw ra, 0(sp)
     jal parse_immediate
     beqz a1, imm5_fail
-    
+
     # Range: 0 to 31
     bltz a0, imm5_fail
     li t0, 31
     bgt a0, t0, imm5_fail
-    
+
     lw ra, 0(sp)
     addi sp, sp, 4
     li a0, 1
@@ -597,13 +608,13 @@ check_is_12bit_imm:
     sw ra, 0(sp)
     jal parse_immediate
     beqz a1, imm12_fail
-    
+
     # Range: -2048 to 2047
     li t0, -2048
     blt a0, t0, imm12_fail
     li t0, 2047
     bgt a0, t0, imm12_fail
-    
+
     lw ra, 0(sp)
     addi sp, sp, 4
     li a0, 1
@@ -619,13 +630,13 @@ check_is_20bit_imm:
     sw ra, 0(sp)
     jal parse_immediate
     beqz a1, imm20_fail
-    
+
     # Range: -524288 to 524287
     li t0, -524288
     blt a0, t0, imm20_fail
     li t0, 524287
     bgt a0, t0, imm20_fail
-    
+
     lw ra, 0(sp)
     addi sp, sp, 4
     li a0, 1
@@ -643,7 +654,7 @@ check_is_label:
     mv t0, a0
     lb t1, 0(t0)
     beqz t1, label_fail
-    
+
     # First char: letter or underscore
     li t2, '_'
     beq t1, t2, label_check_rest
@@ -661,7 +672,7 @@ label_check_rest:
 label_loop:
     lb t1, 0(t0)
     beqz t1, label_valid
-    
+
     # Allow letters, digits, underscore
     li t2, '_'
     beq t1, t2, label_continue
@@ -689,7 +700,7 @@ label_valid:
     jal find_opcode
     lw ra, 0(sp)
     addi sp, sp, 4
-    
+
     li t0, -1
     bne a0, t0, label_fail
     li a0, 1
@@ -708,7 +719,7 @@ check_is_address:
     sw s0, 4(sp)
     mv s0, a0
     mv t0, s0
-    
+
     # Find opening parenthesis
 find_paren:
     lb t1, 0(t0)
@@ -735,7 +746,7 @@ offset_done:
     la a0, token
     jal check_is_12bit_imm
     beqz a0, addr_fail
-    
+
     # Extract register
     addi t0, t0, 1
     la t2, token
@@ -751,15 +762,15 @@ extract_reg:
 
 reg_done:
     sb zero, 0(t2)
-    
+
     # Must be end of string
     addi t0, t0, 1
     lb t3, 0(t0)
     bnez t3, addr_fail
-    
+
     la a0, token
     jal check_is_register
-    
+
     lw s0, 4(sp)
     lw ra, 0(sp)
     addi sp, sp, 8
@@ -921,7 +932,7 @@ wait_continue_input:
     beqz t1, wait_continue_input
     li t0, KEYBOARD_DATA
     lw t2, 0(t0)
-    
+
     # Check if it's 1 or 0
     li t3, '1'
     beq t2, t3, got_one
@@ -939,7 +950,7 @@ wait_display_one:
     li t0, DISPLAY_DATA
     li t2, '1'
     sw t2, 0(t0)
-    
+
     # Wait for Enter
 wait_enter_one:
     li t0, KEYBOARD_CTRL
@@ -950,7 +961,7 @@ wait_enter_one:
     lw t2, 0(t0)
     li t3, 10
     bne t2, t3, wait_enter_one
-    
+
     # Echo newline
     li t2, 10
 wait_display_nl_one:
@@ -960,7 +971,7 @@ wait_display_nl_one:
     beqz t3, wait_display_nl_one
     li t0, DISPLAY_DATA
     sw t2, 0(t0)
-    
+
     j program_loop
 
 got_zero:
@@ -973,7 +984,7 @@ wait_display_zero:
     li t0, DISPLAY_DATA
     li t2, '0'
     sw t2, 0(t0)
-    
+
     # Wait for Enter
 wait_enter_zero:
     li t0, KEYBOARD_CTRL
@@ -984,7 +995,7 @@ wait_enter_zero:
     lw t2, 0(t0)
     li t3, 10
     bne t2, t3, wait_enter_zero
-    
+
     # Echo newline
     li t2, 10
 wait_display_nl_zero:
@@ -994,7 +1005,7 @@ wait_display_nl_zero:
     beqz t3, wait_display_nl_zero
     li t0, DISPLAY_DATA
     sw t2, 0(t0)
-    
+
     j exit_program
 
 exit_program:

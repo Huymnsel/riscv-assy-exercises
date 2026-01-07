@@ -1,0 +1,19 @@
+// done loading proper song addr to t3 after keypress, next: finish playback loop
+// - load song parameters from memory from t3 (4 pieces 1 loop)
+// - play (ecall)
+// - advance t3
+// - jump back to start of play loop
+// - see -1 -> jump to -> end_song (give some messages) -> jump to wait loop
+// then handle key presses
+
+keypresses handled:
+in wait: 1, 2, 3, 4
+         0 needs polishing (it should not do anything) -> OK
+         just need to maybe tell something
+playing: 0
+         1, 2, 3, 4 handled by `s0` (maybe add messages?)
+
+         other numbers of row 2 need handling (maybe messages)
+         handle with `not_found:`
+
+tomorrow mainly grinding notes, document
