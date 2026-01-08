@@ -46,10 +46,29 @@ Solutions:
 
 #diagram(
   node-stroke: 1pt,
-  node((0,0), [Start], corner-radius: 2pt),
+  node((0,0), [Start], corner-radius: 2pt, extrude: (0, 3)),
   edge("-|>"),
-  node((0,1), align(center)[
-    Hey, wait,\ this flowchart\ is a trap!
-  ], shape: circle),
-  edge("d,r,u,l", "-|>", [Yes], label-pos: 0.1)
+  node((2,0), [Initialize\ - Enable interrupts\ - Set registers\ - `s1` "playing" flag = 0]),
+  edge("-|>"),
+  node((2,1), [`wait_loop`]),
+  edge("-|>"),
+  node((2,2), align(center)[
+    `t3` (used as pointer) set?
+  ], shape: diamond),
+  edge("r,r,u,l,l", "-|>", [No], label-pos: 0.1),
+  edge("-|>", [Yes]),
+  node((2,3), [`play_loop`\ - Read note]),
+  edge("-|>"),
+  node((2,4), align(center)[
+    Data loaded = "-1"?\ (song end marker)
+  ], shape: diamond),
+  edge("r,r,u,u,u,l,l", "-|>", [Yes], label-pos: 0.1),
+  edge("-|>", [No]),
+  node((2,5), [Play the note \(ecall\)\ Advance pointer \(4 words\)]),
+  edge("-|>"),
+  node((0,5), align(center)[
+    `s1` "playing" flag = 0?
+  ], shape: diamond),
+  edge("u,u,r,r", "-|>", [No], label-pos: 0.1),
+  edge("l,u,u,u,u,r,r,r", "-|>", [Yes], label-pos: 0.2),
 )

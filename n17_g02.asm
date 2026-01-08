@@ -141,7 +141,7 @@ search_loop:
 found:
 	lw t2, 4(s0)
 	beqz t2, key_press_0
-	bnez s1, invalid_key # TODO make logic for pressing 1, 2, 3, 4 while playing
+	bnez s1, invalid_key
 	
 	# Load new song
 	li s1, 1                        # Set playing status
@@ -150,7 +150,7 @@ found:
 key_press_0:
 	li s1, 0 # s1, playing status take 0
 	j end_handler
-invalid_key: # TODO notify invalid key press
+invalid_key:
 	li a7, 4
 	la a0, invalid_press
 	ecall
