@@ -1,36 +1,71 @@
 .eqv IN_ADDRESS_HEXA_KEYBOARD 0xFFFF0012
-.eqv OUT_ADDRESS_HEXA_KEYBOARD 0xffff0014
+.eqv OUT_ADDRESS_HEXA_KEYBOARD 0xFFFF0014
+
 .data
+# Lookup table: [key_code, song_address]
 lookup_table:
 	.word 0x11, 0
 	.word 0x21, song1
 	.word 0x41, song2
 	.word 0xffffff81, song3
 	.word 0x12, song4
-	# .word 0x22, 0
-	# .word 0x42, 0
-	# .word 0x82, 0
-	.word 0, 0 # end marker
+	.word 0, 0                      # End marker
 	
-	prompt_msg: .asciz "Press number for music:\n1. Littleroot Town\n2. Mii Channel Theme\n3. We Wish You A Merry Christmas\n4. Song 4\n0. Stop\n" # FIXED: Added complete menu options
-	play_msg: .asciz "Playing song number "
-	new_line: .asciz "\n"
-	stop_msg: .asciz "Press 0 to stop playback\n"
-	stopped_msg: .asciz "Stopped playback\n\n"
-	invalid_press: .asciz "Invalid key press\n"
-	#Littleroot Town
-	song1: .word 65,560,26,127, 60,560,26,127, 65,280,26,127, 67,280,26,127, 69,840,26,127, 65,280,26,127, 69,560,26,127, 67,1120,26,127, 65,560,26,127, 62,560,26,127, 70,280,26,127, 69,280,26,127, 67,560,26,127, 65,280,26,127, 64,280,26,127, 65,1120,26,127, -1 
-        #Mii Channel Theme
-	song2: .word 48,280,26,127, 53,280,26,127, 55,280,26,127, 57,841,26,127, 55,280,26,127, 57,280,26,127, 55,280,26,127, 57,280,26,127, 59,280,26,127, 60,841,26,127, 62,280,26,127, 57,561,26,127, 57,280,26,127, 61,280,26,127, 62,561,26,127, 64,561,26,127, 62,561,26,127, 57,280,26,127, 55,280,26,127, 53,280,26,127, 52,280,26,127, 53,280,26,127, 57,280,26,127, 62,561,26,127, 50,280,26,127, 52,280,26,127, -1
-	#We Wish You A Merry Christmas
-	song3: .word 53,1121,26,127, 60,280,26,127, 59,280,26,127, 59,280,26,127, 57,280,26,127, 53,1122,26,127, 62,280,26,127, 57,280,26,127, 57,280,26,127, 55,280,26,127, 53,1682,26,127, 52,280,26,127, 50,280,26,127, 52,841,26,127, 53,280,26,127, 55,280,26,127, 48,280,26,127, 60,280,26,127, 59,280,26,127, 57,841,26,127, 55,280,26,127, 57,280,26,127, 55,280,26,127, 57,280,26,127, 59,280,26,127, 55,280,26,0, 60,561,26,127, 62,280,26,127, 57,280,26,127, 55,280,26,127, 57,280,26,127, 61,280,26,127, -1
-	song4: .word 62,561,26,127, 60,561,26,127, 64,561,26,127, 59,561,26,127, 48,280,26,127, 47,280,26,127, 48,280,26,127, 57,280,26,127, 59,561,26,127, 57,561,26,127, -1
-	
-.text
-preparations: # (main) won't be re run again
-	la s0, lookup_table
-	li s1, 0 # "playing" status
+# UI Messages
+prompt_msg: .asciz "Press number for music:\n1. Super Mario Bros Theme\n2. Tetris Theme\n3. We Wish You A Merry Christmas\n4. Megalovania (Undertale)\n0. Stop\n"
+play_msg: .asciz "Playing song number "
+new_line: .asciz "\n"
+stop_msg: .asciz "Press 0 to stop playback\n"
+stopped_msg: .asciz "Stopped playback\n\n"
+invalid_press: .asciz "Invalid key press\n"
 
+# ============================================================================
+# SONG DATA - Format: pitch, duration, instrument, volume
+# ============================================================================
+
+# Song 1: Super Mario Bros Theme
+song1:
+	.word 76,150,1,127, 76,150,1,127, 76,300,1,127
+	.word 72,150,1,127, 76,300,1,127, 79,600,1,127, 67,600,1,127
+	.word 72,450,1,127, 67,450,1,127, 64,450,1,127
+	.word 69,300,1,127, 71,300,1,127, 70,150,1,127, 69,300,1,127
+	.word -1
+
+# Song 2: Tetris Theme
+song2:
+	.word 76,400,1,127, 71,200,1,127, 72,200,1,127, 74,400,1,127, 72,200,1,127, 71,200,1,127
+	.word 69,400,1,127, 69,200,1,127, 72,200,1,127, 76,400,1,127, 74,200,1,127, 72,200,1,127, 71,600,1,127
+	.word 72,200,1,127, 74,400,1,127, 76,400,1,127, 72,400,1,127, 69,400,1,127, 69,400,1,127
+	.word -1
+
+# Song 3: We Wish You A Merry Christmas
+song3:
+	.word 60,500,26,127, 65,500,26,127, 65,250,26,127, 67,250,26,127, 65,250,26,127, 64,250,26,127, 62,500,26,127, 62,500,26,127
+	.word 62,500,26,127, 67,500,26,127, 67,250,26,127, 69,250,26,127, 67,250,26,127, 65,250,26,127, 64,500,26,127, 60,500,26,127
+	.word 60,500,26,127, 69,500,26,127, 69,250,26,127, 70,250,26,127, 69,250,26,127, 67,250,26,127, 65,500,26,127, 62,500,26,127
+	.word 60,250,26,127, 60,250,26,127, 62,500,26,127, 67,500,26,127, 64,500,26,127, 65,1000,26,127
+	.word -1
+
+# Song 4: Megalovania (Undertale)
+song4:
+	.word 50,140,30,127, 50,140,30,127, 62,280,30,127, 57,280,30,127, 56,280,30,127, 55,280,30,127, 53,280,30,127, 50,140,30,127, 53,140,30,127, 55,140,30,127
+	.word 48,140,30,127, 48,140,30,127, 62,280,30,127, 57,280,30,127, 56,280,30,127, 55,280,30,127, 53,280,30,127, 50,140,30,127, 53,140,30,127, 55,140,30,127
+	.word 47,140,30,127, 47,140,30,127, 62,280,30,127, 57,280,30,127, 56,280,30,127, 55,280,30,127, 53,280,30,127, 50,140,30,127, 53,140,30,127, 55,140,30,127
+	.word 46,140,30,127, 46,140,30,127, 62,280,30,127, 57,280,30,127, 56,280,30,127, 55,280,30,127, 53,280,30,127, 50,140,30,127, 53,140,30,127, 55,140,30,127
+	.word -1
+
+# ============================================================================
+# MAIN PROGRAM
+# ============================================================================
+
+.text
+main:
+	# Initialize registers
+	la s0, lookup_table
+	li s1, 0                        # s1 = playing status (0=stopped, 1=playing)
+	li t3, 0                        # t3 = current song pointer
+
+	# Setup interrupt handler
 	la t0, handler
 	csrrs zero, utvec, t0
 	
@@ -38,127 +73,130 @@ preparations: # (main) won't be re run again
 	csrrs zero, uie, t1
 	csrrsi zero, ustatus, 1
 	
+	# Enable keyboard interrupt
 	li t1, IN_ADDRESS_HEXA_KEYBOARD
-	li t3, 0x80
-	sb t3, 0(t1) # Just setting up interrupt
+	li t2, 0x80
+	sb t2, 0(t1)
 	
+	# Print menu
 	li a7, 4
 	la a0, prompt_msg
 	ecall
-	li t3, 0
-	
-wait_loop: # Main will just wait in wait loop until interrupt (1, 2, 3, 4)
+
+# ============================================================================
+# MAIN LOOP
+# ============================================================================
+
+wait_loop:
 	nop
 	nop
 	nop
 	nop
 	nop
-	#li a7, 32
-	#li a0, 1000
-	#ecall # syscall 32 sleep, 1000ms
-	
-	bgtz t3, play_loop
-	
+	bgtz t3, play_loop              # If song loaded, start playing
 	j wait_loop
-	#beqz x0, wait_loop
 
-play_loop: # While playing wait for keypress
-	lw a7, 0(t3)
-	bltz a7, song_end
+play_loop:
+	lw a7, 0(t3)                    # Load pitch
+	bltz a7, song_end               # If -1, song ended
 
-	li a7, 33 # 33 is MIDI wait, 31 not wait
-	lw a0, 0(t3) # pitch
-	lw a1, 4(t3) # dura
-	lw a2, 8(t3) # instrument
-	lw a3, 12(t3) # volume
+	# Play MIDI note
+	li a7, 33                       # Syscall 33: MIDI out synchronous
+	lw a0, 0(t3)                    # pitch
+	lw a1, 4(t3)                    # duration
+	lw a2, 8(t3)                    # instrument
+	lw a3, 12(t3)                   # volume
 	ecall
 	
-	nop
-	nop
-	nop
-	
-	addi t3, t3, 16 # advance by 16 bytes (4 words)
-	
-	beqz s1, song_end # "playing" = 0 then end
-	beqz x0, play_loop
+	addi t3, t3, 16                 # Advance to next note (4 words = 16 bytes)
+	beqz s1, song_end               # If stopped by interrupt, end song
+	j play_loop
 
 song_end:
+	# Print end message and menu
 	li a7, 4
 	la a0, stopped_msg
 	ecall
-	li a7, 4
 	la a0, prompt_msg
 	ecall
 	
+	# Reset state
 	li t3, 0
 	li s1, 0
-	beqz x0, wait_loop
+	j wait_loop
 
-handler: # Handle jumping to wait loop when press 0 (stop playback)
-	 # Loading appropriate song data when others (1..4) then jump to play loop
-	addi sp, sp, -24 # FIXED: Changed from -20 to -24 to have enough space for 5 registers
+# ============================================================================
+# INTERRUPT HANDLER
+# ============================================================================
+
+handler:
+	# Save registers
+	addi sp, sp, -24
 	sw a0, 0(sp)
 	sw a7, 4(sp)
 	sw s0, 8(sp)
-	sw t1, 12(sp) # FIXED: Changed from offset 16 to 12
-	sw t2, 16(sp) # FIXED: Changed from offset 20 to 16
+	sw t1, 12(sp)
+	sw t2, 16(sp)
 	
-	la s0, lookup_table # ADDED: Reset lookup_table pointer to beginning on each handler call
+	la s0, lookup_table             # Reset lookup table pointer
 	
 get_key_code:
+	# Check row 1
 	li t1, IN_ADDRESS_HEXA_KEYBOARD
-	li t2, 0x81 # Check row 1 and re-enable bit 7
+	li t2, 0x81
 	sb t2, 0(t1)
 	li t1, OUT_ADDRESS_HEXA_KEYBOARD
 	lb a0, 0(t1)
 	bnez a0, got_key_code
 	
+	# Check row 2
 	li t1, IN_ADDRESS_HEXA_KEYBOARD
-	li t2, 0x82 # Check row 2 and re-enable bit 7
+	li t2, 0x82
 	sb t2, 0(t1)
 	li t1, OUT_ADDRESS_HEXA_KEYBOARD
 	lb a0, 0(t1)
-	bnez a0, got_key_code # (in a0)
+	bnez a0, got_key_code
 	
-	# ADDED: Re-enable interrupt even if no key is found to prevent interrupt loss
+	# Re-enable interrupt if no key found
 	li t1, IN_ADDRESS_HEXA_KEYBOARD
 	li t2, 0x80
 	sb t2, 0(t1)
-	
-	j end_handler # ADDED: Exit handler if no key is pressed
-	
+	j end_handler
+
 got_key_code:
-search_loop: # first, search in table
+	# Search for key code in lookup table
+search_loop:
 	lw t1, 0(s0)
-	beqz t1, invalid_key
-	
-	beq t1, a0, found # key code in a0 found in lookup table
-	addi s0, s0, 8
+	beqz t1, invalid_key            # End of table, key not found
+	beq t1, a0, found               # Key found
+	addi s0, s0, 8                  # Move to next entry
 	j search_loop
-	#beq x0, x0, search_loop
+
 found:
-	lw t2, 4(s0)
-	beqz t2, key_press_0
-	# REMOVED: Deleted "bnez s1, invalid_key" to allow changing songs during playback
-	# bnez s1, invalid_key # TODO make logic for pressing 1, 2, 3, 4 while playing
+	lw t2, 4(s0)                    # Get song address
+	beqz t2, key_press_0            # If 0, it's the stop key
 	
-	li s1, 1 # "playing" status to 1
-	mv t3, t2 # t3 will be used in playback loop
-	
+	# Load new song
+	li s1, 1                        # Set playing status
+	mv t3, t2                       # Load song pointer
 	j end_handler
+
 key_press_0:
-	li s1, 0      # FIXED: Stop playing status
-	li t3, 0      # ADDED: Clear song pointer immediately to stop playback right away
+	# Stop playback
+	li s1, 0                        # Clear playing status
+	li t3, 0                        # Clear song pointer
 	j end_handler
-invalid_key: # FIXED: Removed syscall from handler to avoid issues in interrupt context
+
+invalid_key:
+	# Do nothing for invalid keys
 	j end_handler
+
 end_handler:
-	lw t2, 16(sp) # FIXED: Changed from offset 20 to 16
-	lw t1, 12(sp) # FIXED: Changed from offset 16 to 12
+	# Restore registers
+	lw t2, 16(sp)
+	lw t1, 12(sp)
 	lw s0, 8(sp)
 	lw a7, 4(sp)
 	lw a0, 0(sp)
-	addi sp, sp, 24 # FIXED: Changed from 20 to 24
-	
+	addi sp, sp, 24
 	uret
-end:
