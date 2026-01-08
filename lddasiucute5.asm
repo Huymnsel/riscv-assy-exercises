@@ -15,7 +15,7 @@ msg_success: .string "Syntax is valid."
 msg_continue: .string "\n\nContinue? (1=Yes, 0=No): "
 msg_exit: .string "\nProgram ended\n"
 newline: .string "\n"
-backspace_seq: .byte 8, 32, 8, 0  # Backspace display sequence: BS, SPACE, BS
+backspace_seq: .byte 8, 32, 8, 0  # Backspace display sequence: Backspace, Space, Backspace
 
 # RISC-V opcode strings
 op_lw: .string "lw"
@@ -56,7 +56,6 @@ op_bltu: .string "bltu"
 op_bgeu: .string "bgeu"
 op_jal: .string "jal"
 
-# Opcode mapping table: [opcode_string_address, instruction_type]
 # Type codes: 1=Load, 2=U-type, 3=I-type, 4=R-type, 5=Branch, 6=J-type, 7=Shift-Imm, 10=Store
 opcode_map:
 	.word op_lw, 1          # Load instructions
