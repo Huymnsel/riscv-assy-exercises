@@ -690,9 +690,10 @@ label_fail:
 
 # Validate address format: offset(register)
 check_is_address:
-	addi sp, sp, -8
+	addi sp, sp, -12                
 	sw ra, 0(sp)
 	sw s0, 4(sp)
+	sw s1, 8(sp)                    
 	mv s0, a0
 	mv t0, s0
 	
@@ -706,11 +707,12 @@ find_paren:
 	j find_paren
 
 found_paren:
-	# Extract offset part
+	mv s1, t0                       
+	
 	mv t1, s0
 	la t2, token
 extract_offset:
-	beq t1, t0, offset_done
+	beq t1, s1, offset_done         
 	lb t3, 0(t1)
 	sb t3, 0(t2)
 	addi t1, t1, 1
@@ -720,17 +722,18 @@ extract_offset:
 offset_done:
 	sb zero, 0(t2)
 	la a0, token
-	jal check_is_12bit_imm          # Validate offset as 12-bit immediate
+	jal check_is_12bit_imm         
 	beqz a0, addr_fail
 	
 	# Extract register part
-	addi t0, t0, 1                  # Skip '('
+	addi s1, s1, 1                  
+	mv t0, s1                       
 	la t2, token
 extract_reg:
 	lb t3, 0(t0)
 	beqz t3, addr_fail
 	li t4, ')'
-	beq t3, t4, reg_done            # Found closing parenthesis
+	beq t3, t4, reg_done
 	sb t3, 0(t2)
 	addi t0, t0, 1
 	addi t2, t2, 1
@@ -740,18 +743,22 @@ reg_done:
 	sb zero, 0(t2)
 	addi t0, t0, 1
 	lb t3, 0(t0)
-	bnez t3, addr_fail              # Should be end of token
+	bnez t3, addr_fail
+	
 	la a0, token
-	jal check_is_register           # Validate register
+	jal check_is_register           
+	
+	lw s1, 8(sp)                  
 	lw s0, 4(sp)
 	lw ra, 0(sp)
-	addi sp, sp, 8
+	addi sp, sp, 12            
 	ret
 
 addr_fail:
+	lw s1, 8(sp)                    
 	lw s0, 4(sp)
 	lw ra, 0(sp)
-	addi sp, sp, 8
+	addi sp, sp, 12
 	li a0, 0
 	ret
 
